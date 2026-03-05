@@ -1,766 +1,930 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Will you be my Valentine?</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VENTRICULAR TREVENA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #FF1F1F;
+    --black: #0A0A0A;
+    --white: #F5F0E8;
+    --grey: #1A1A1A;
+    --mid: #2E2E2E;
+  }
 
-  <!-- Confetti library -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  <style>
-    :root {
-      --bg1: #ffd6e7;
-      --bg2: #ffeef6;
-      --card: #ffffffcc;
-      --yes: #ff3b7a;
-      --yesHover: #ff1f68;
-    }
+  html { scroll-behavior: smooth; }
 
-    * { box-sizing: border-box; }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Space Mono', monospace;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
 
-    body {
-      margin: 0;
-      min-height: 100svh;
-      display: grid;
-      place-items: center;
-      background: radial-gradient(circle at top, var(--bg2), var(--bg1));
-      font-family: system-ui, sans-serif;
-      overflow: hidden;
-      padding: 16px;
-    }
+  /* MARQUEE */
+  .marquee-bar {
+    background: var(--red);
+    padding: 10px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+  .marquee-track {
+    display: inline-block;
+    animation: marquee 18s linear infinite;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+    color: var(--black);
+  }
+  .marquee-track span { margin: 0 2rem; }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
 
-    /* FULL-SCREEN CONFETTI CANVAS */
-    #confettiCanvas {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 9999;
-    }
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 36px;
+    width: 100%;
+    z-index: 999;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 2.5rem;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid #222;
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.1em;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--red); }
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--white);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--red); }
 
-    .card {
-      width: min(720px, 92vw);
-      padding: 26px 22px;
-      background: var(--card);
-      backdrop-filter: blur(10px);
-      border-radius: 22px;
-      text-align: center;
-      box-shadow: 0 18px 60px rgba(0,0,0,.15);
-    }
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    padding-top: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
 
-    .art {
-      width: min(220px, 70vw);
-      margin: 0 auto 8px;
-      display: block;
-      filter: drop-shadow(0 10px 14px rgba(0,0,0,.12));
-    }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 79px, #111 79px, #111 80px),
+      repeating-linear-gradient(90deg, transparent, transparent 79px, #111 79px, #111 80px);
+    opacity: 0.4;
+  }
 
-    h1 {
-      font-size: clamp(24px, 3.8vw, 40px);
-      margin: 10px 0 16px;
-    }
+  .hero-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(180px, 28vw, 380px);
+    line-height: 0.85;
+    color: transparent;
+    -webkit-text-stroke: 1px #333;
+    position: absolute;
+    right: -2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    user-select: none;
+    z-index: 0;
+  }
 
-    .button-zone {
-      position: relative;
-      width: min(520px, 92%);
-      height: 150px;
-      margin: 0 auto;
-      touch-action: none;
-    }
+  .hero-content { position: relative; z-index: 1; }
 
-    button {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      padding: 12px 24px;
-      font-size: 16px;
-      font-weight: 800;
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0,0,0,.12);
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      transition: transform .12s ease, background .12s ease;
-    }
+  .hero-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 1rem;
+    animation: fadeUp 0.8s ease both;
+  }
 
-    #yesBtn {
-      left: 18%;
-      background: var(--yes);
-      color: #fff;
-    }
-    #yesBtn:hover { background: var(--yesHover); }
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(60px, 11vw, 160px);
+    line-height: 0.9;
+    letter-spacing: -0.01em;
+    animation: fadeUp 0.8s 0.1s ease both;
+  }
+  .hero-title .red { color: var(--red); }
 
-    #noBtn {
-      left: 62%;
-      background: #e5e7eb;
-      color: #111827;
-    }
+  .hero-sub {
+    margin-top: 1.5rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #888;
+    max-width: 420px;
+    line-height: 1.9;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
 
-    .hint {
-      margin-top: 10px;
-      font-size: 13px;
-      opacity: .7;
-    }
+  .hero-cta {
+    margin-top: 2.5rem;
+    display: flex;
+    gap: 1rem;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
 
-    .result {
-      display: none;
-      margin-top: 18px;
-      animation: pop .35s ease;
-    }
+  .btn-primary {
+    background: var(--red);
+    color: var(--black);
+    border: none;
+    padding: 1rem 2.2rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    cursor: crosshair;
+    transition: background 0.2s, transform 0.15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: #fff; transform: translateY(-2px); }
 
-    .result h2 {
-      font-size: clamp(28px, 4vw, 42px);
-      margin: 8px 0;
-    }
+  .btn-outline {
+    background: transparent;
+    color: var(--white);
+    border: 1px solid #444;
+    padding: 1rem 2.2rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    cursor: crosshair;
+    transition: border-color 0.2s, transform 0.15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-outline:hover { border-color: var(--red); color: var(--red); transform: translateY(-2px); }
 
-    .fireworks {
-      width: min(280px, 70vw);
-      margin: 0 auto;
-      display: block;
-    }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-    /* GIFT BUTTON */
-    #giftBtn {
-      position: static;
-      margin-top: 15px;
-      padding: 12px 24px;
-      font-size: 16px;
-      background: var(--yes);
-      color: white;
-      transform: none;
-      animation: pulse 2s ease-in-out infinite;
-    }
+  /* COUNTDOWN SECTION */
+  .drop-section {
+    background: var(--grey);
+    padding: 6rem 2.5rem;
+    border-top: 3px solid var(--red);
+    border-bottom: 3px solid var(--red);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
 
-    #giftBtn:hover {
-      background: var(--yesHover);
-    }
+  .drop-section::before {
+    content: 'DROP';
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20vw;
+    color: transparent;
+    -webkit-text-stroke: 1px #2a2a2a;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    white-space: nowrap;
+    pointer-events: none;
+  }
 
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
+  .drop-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 0.5rem;
+  }
 
-    @keyframes pop {
-      from { transform: scale(.96); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
+  .drop-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 6vw, 80px);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
 
-    /* ENVELOPE PAGE */
-    .envelope-page {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at top, var(--bg2), var(--bg1));
-      z-index: 10000;
-    }
+  .drop-date {
+    font-size: 0.68rem;
+    letter-spacing: 0.25em;
+    color: #888;
+    text-transform: uppercase;
+    margin-bottom: 3rem;
+  }
 
-    .container-envelope {
-      height: 100vh;
-      display: grid;
-      place-items: center;
-    }
+  .countdown {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    position: relative;
+    z-index: 1;
+    flex-wrap: wrap;
+  }
 
-    .container-envelope > .envelope-wrapper {
-      background: #f5edd1;
-      box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
-    }
+  .countdown-block {
+    min-width: 130px;
+    padding: 1.5rem 1.5rem 1rem;
+    border: 1px solid #333;
+    position: relative;
+  }
+  .countdown-block + .countdown-block { border-left: none; }
 
-    .container-envelope .envelope-wrapper .envelope {
-      position: relative;
-      width: 300px;
-      height: 230px;
-    }
+  .countdown-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 7vw, 90px);
+    line-height: 1;
+    color: var(--white);
+    display: block;
+  }
 
-    .envelope-wrapper > .envelope::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      z-index: 2;
-      border-top: 130px solid #ecdeb8;
-      border-right: 150px solid transparent;
-      border-left: 150px solid transparent;
-      transform-origin: top;
-      transition: all 0.5s ease-in-out 0.7s;
-    }
+  .countdown-unit {
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    color: #666;
+    text-transform: uppercase;
+    margin-top: 0.4rem;
+    display: block;
+  }
 
-    .container-envelope .envelope-wrapper .envelope::after {
-      content: "";
-      position: absolute;
-      z-index: 2;
-      width: 0;
-      height: 0;
-      border-top: 130px solid transparent;
-      border-right: 150px solid #e6cfa7;
-      border-bottom: 100px solid #e6cfa7;
-      border-left: 150px solid #e6cfa7;
-    }
+  /* WAITLIST */
+  .waitlist {
+    margin-top: 3rem;
+    position: relative;
+    z-index: 1;
+  }
+  .waitlist p {
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 1rem;
+  }
+  .waitlist-form {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .waitlist-form input {
+    flex: 1;
+    background: var(--black);
+    border: 1px solid #444;
+    border-right: none;
+    padding: 0.9rem 1.2rem;
+    color: var(--white);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .waitlist-form input::placeholder { color: #555; }
+  .waitlist-form input:focus { border-color: var(--red); }
+  .waitlist-form button {
+    background: var(--red);
+    border: none;
+    padding: 0.9rem 1.5rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+    color: var(--black);
+    cursor: crosshair;
+    transition: background 0.2s;
+  }
+  .waitlist-form button:hover { background: var(--white); }
+  #waitlist-success {
+    display: none;
+    color: var(--red);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    margin-top: 1rem;
+    text-transform: uppercase;
+  }
 
-    .envelope > .letter {
-      position: absolute;
-      right: 20%;
-      bottom: 0;
-      width: 54%;
-      height: 80%;
-      background: #fff;
-      text-align: center;
-      transition: all 1s ease-in-out;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-      padding: 12px 8px 25px 8px;
-      overflow-y: auto;
-    }
+  /* CURRENT DROP ITEMS */
+  .items-section {
+    padding: 6rem 2.5rem;
+  }
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid #222;
+    padding-bottom: 1rem;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(32px, 5vw, 64px);
+    letter-spacing: 0.05em;
+  }
+  .section-meta {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: #666;
+    text-transform: uppercase;
+  }
 
-    .container-envelope .envelope-wrapper .envelope .letter .text {
-      font-size: clamp(9px, 2vw, 11px);
-      font-weight: 600;
-      color: #ff3b7a;
-      text-align: left;
-      line-height: 1.4;
-      height: auto;
-      padding-bottom: 10px;
-    }
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1px;
+    background: #1a1a1a;
+  }
+  .item-card {
+    background: var(--black);
+    position: relative;
+    overflow: hidden;
+    cursor: crosshair;
+    transition: transform 0.3s;
+  }
+  .item-card:hover { z-index: 2; transform: scale(1.02); }
+  .item-card.sold-out { opacity: 0.5; }
+  .item-card.sold-out:hover { transform: none; cursor: not-allowed; }
 
-    .heart {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 15px;
-      height: 15px;
-      background: #ff3b7a;
-      z-index: 999;
-      transform: translate(-50%, -20%) rotate(-45deg);
-      transition: transform 0.5s ease-in-out 1s;
-      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
-      cursor: pointer;
-      pointer-events: auto;
-    }
+  .item-img {
+    width: 100%;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    display: block;
+    background: var(--grey);
+    position: relative;
+  }
 
-    .heart::before,
-    .heart::after {
-      content: "";
-      position: absolute;
-      width: 15px;
-      height: 15px;
-      background: #ff3b7a;
-      border-radius: 50%;
-    }
+  .item-placeholder {
+    width: 100%;
+    aspect-ratio: 3/4;
+    background: var(--grey);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
 
-    .heart::before {
-      top: -7.5px;
-    }
+  .item-placeholder::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(45deg, #1f1f1f 0, #1f1f1f 1px, transparent 1px, transparent 50%);
+    background-size: 20px 20px;
+  }
 
-    .heart::after {
-      right: -7.5px;
-    }
+  .item-placeholder-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    color: #444;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 1rem;
+  }
 
-    .flap .envelope::before {
-      transform: rotateX(180deg);
-      z-index: 0;
-    }
+  .sold-out-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid #333;
+  }
 
-    .flap .envelope .letter {
-      bottom: 180px;
-      transform: scale(1.5);
-      transition-delay: 1s;
-    }
+  .limited-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: var(--red);
+    color: var(--black);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    padding: 0.25rem 0.6rem;
+  }
 
-    .flap .heart {
-      transform: translate(-50%, -20%) rotate(90deg);
-      transition-delay: 0.4s;
-    }
+  .item-info {
+    padding: 1.2rem;
+    border-top: 1px solid #1a1a1a;
+  }
+  .item-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.15rem;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.3rem;
+  }
+  .item-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .item-edition {
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    color: #666;
+    text-transform: uppercase;
+  }
+  .item-price {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--white);
+  }
+  .item-card.sold-out .item-price { color: #555; text-decoration: line-through; }
 
-    .envelope-instruction {
-      position: absolute;
-      bottom: 120px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 16px;
-      font-weight: 600;
-      color: #888;
-      animation: bounce 2s ease-in-out infinite;
-    }
+  /* ARCHIVE */
+  .archive-section {
+    padding: 6rem 2.5rem;
+    background: var(--grey);
+  }
 
-    @keyframes bounce {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50% { transform: translateX(-50%) translateY(-8px); }
-    }
+  .archive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1px;
+    background: #222;
+    margin-top: 3rem;
+  }
 
-    /* SURPRISE BUTTON - exactly matches gift button */
-    #surpriseBtn {
-      display: none;
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 12px 24px;
-      font-size: 16px;
-      font-weight: 800;
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      background: var(--yes);
-      color: white;
-      box-shadow: 0 8px 20px rgba(0,0,0,.12);
-      animation: popIn 0.5s ease 1s forwards;
-      opacity: 0;
-      z-index: 10001;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      transition: transform .12s ease, background .12s ease;
-    }
+  .archive-card {
+    background: var(--grey);
+    padding: 2rem;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .archive-card:hover { background: #222; }
 
-    #surpriseBtn:hover {
-      background: var(--yesHover);
-      transform: translateX(-50%);
-    }
+  .archive-drop-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    color: #2a2a2a;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+  .archive-drop-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+  }
+  .archive-drop-date {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+  .archive-sold {
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    color: var(--red);
+    text-transform: uppercase;
+  }
 
-    @keyframes popIn {
-      from { opacity: 0; transform: translateX(-50%) scale(0.9); }
-      to { opacity: 1; transform: translateX(-50%) scale(1); }
-    }
+  /* FOOTER */
+  footer {
+    padding: 4rem 2.5rem 2rem;
+    border-top: 1px solid #1a1a1a;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
+  }
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.05em;
+    line-height: 1;
+    margin-bottom: 0.8rem;
+  }
+  .footer-logo span { color: var(--red); }
+  .footer-tagline {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    color: #555;
+    text-transform: uppercase;
+  }
+  .footer-col h4 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+    margin-bottom: 1rem;
+    color: #888;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col ul li { margin-bottom: 0.6rem; }
+  .footer-col ul li a {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    color: #555;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .footer-col ul li a:hover { color: var(--white); }
+  .footer-bottom {
+    padding: 1.5rem 2.5rem;
+    border-top: 1px solid #1a1a1a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-bottom p {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: #444;
+    text-transform: uppercase;
+  }
 
-    /* LANTERNS PAGE */
-    .lanterns-page {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: linear-gradient(to bottom, #0a0e27 0%, #1a1f3a 50%, #2d1b3d 100%);
-      z-index: 10002;
-      overflow: hidden;
-    }
+  /* NOISE OVERLAY */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 9999;
+  }
 
-    .stars {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-    }
-
-    .star {
-      position: absolute;
-      background: white;
-      border-radius: 50%;
-      animation: twinkle 3s ease-in-out infinite;
-    }
-
-    @keyframes twinkle {
-      0%, 100% { opacity: 0.3; }
-      50% { opacity: 1; }
-    }
-
-    .lantern-container {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
-
-    .lantern {
-      position: absolute;
-      width: 60px;
-      height: 80px;
-      bottom: -100px;
-      animation: float-up 15s ease-in infinite;
-      filter: drop-shadow(0 0 20px rgba(255,200,100,0.8));
-    }
-
-    @keyframes float-up {
-      0% {
-        transform: translateY(0) translateX(0);
-        opacity: 0;
-      }
-      10% {
-        opacity: 1;
-      }
-      90% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-120vh) translateX(var(--drift));
-        opacity: 0;
-      }
-    }
-
-    .lantern-body {
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(ellipse at center, #fff4e6 0%, #ffb74d 40%, #ff9800 100%);
-      border-radius: 10px;
-      position: relative;
-      box-shadow: inset 0 0 20px rgba(255,255,200,0.8),
-                  0 0 30px rgba(255,200,100,0.6);
-    }
-
-    .lantern-top,
-    .lantern-bottom {
-      width: 70%;
-      height: 8px;
-      background: #8b4513;
-      position: absolute;
-      left: 15%;
-      border-radius: 4px;
-    }
-
-    .lantern-top { top: -4px; }
-    .lantern-bottom { bottom: -4px; }
-
-    .lantern-wire {
-      position: absolute;
-      width: 2px;
-      height: 20px;
-      background: #666;
-      left: 50%;
-      transform: translateX(-50%);
-      top: -24px;
-    }
-
-    .lanterns-message {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: clamp(48px, 8vw, 96px);
-      font-weight: 900;
-      color: #fff;
-      text-align: center;
-      text-shadow: 0 0 20px rgba(255,255,255,0.5),
-                   0 0 40px rgba(255,200,100,0.3);
-      z-index: 10;
-      animation: fadeInMessage 2s ease 1s forwards;
-      opacity: 0;
-      letter-spacing: 4px;
-    }
-
-    @keyframes fadeInMessage {
-      to { opacity: 1; }
-    }
-  </style>
+  @media (max-width: 768px) {
+    footer { grid-template-columns: 1fr; }
+    .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+    .countdown-block { min-width: 80px; padding: 1rem; }
+    .items-grid { grid-template-columns: 1fr 1fr; }
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { gap: 1rem; }
+    .hero { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .hero-number { display: none; }
+  }
+</style>
 </head>
-
 <body>
-  <canvas id="confettiCanvas"></canvas>
 
-  <!-- MAIN PAGE -->
-  <main class="card" id="mainPage">
-    <!-- HUSKY WITH HEART -->
-    <svg class="art" viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="furDark" x1="0" x2="1">
-          <stop offset="0" stop-color="#9ca3af"/>
-          <stop offset="1" stop-color="#6b7280"/>
-        </linearGradient>
-        <linearGradient id="furLight" x1="0" x2="1">
-          <stop offset="0" stop-color="#f3f4f6"/>
-          <stop offset="1" stop-color="#e5e7eb"/>
-        </linearGradient>
-        <linearGradient id="heart" x1="0" x2="1">
-          <stop offset="0" stop-color="#ff4d7d"/>
-          <stop offset="1" stop-color="#ff1f68"/>
-        </linearGradient>
-      </defs>
+<!-- MARQUEE TOP BAR -->
+<div class="marquee-bar">
+  <div class="marquee-track">
+    <span>VENTRICULAR TREVENA</span>
+    <span>◆</span>
+    <span>LIMITED EDITION ONLY</span>
+    <span>◆</span>
+    <span>DROP 009 — COMING SOON</span>
+    <span>◆</span>
+    <span>NO RESTOCKS. NO EXCEPTIONS.</span>
+    <span>◆</span>
+    <span>VENTRICULAR TREVENA</span>
+    <span>◆</span>
+    <span>LIMITED EDITION ONLY</span>
+    <span>◆</span>
+    <span>DROP 009 — COMING SOON</span>
+    <span>◆</span>
+    <span>NO RESTOCKS. NO EXCEPTIONS.</span>
+    <span>◆</span>
+    <span>VENTRICULAR TREVENA</span>
+    <span>◆</span>
+    <span>LIMITED EDITION ONLY</span>
+    <span>◆</span>
+    <span>DROP 009 — COMING SOON</span>
+    <span>◆</span>
+    <span>NO RESTOCKS. NO EXCEPTIONS.</span>
+    <span>◆</span>
+  </div>
+</div>
 
-      <!-- Heart -->
-      <path d="M210 40
-               C210 22 230 18 242 32
-               C254 18 274 22 274 40
-               C274 70 242 86 242 102
-               C242 86 210 70 210 40Z"
-            fill="url(#heart)"/>
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">V<span>T</span></a>
+  <ul class="nav-links">
+    <li><a href="#drop">Next Drop</a></li>
+    <li><a href="#current">Shop</a></li>
+    <li><a href="#archive">Archive</a></li>
+    <li><a href="#waitlist">Waitlist</a></li>
+  </ul>
+</nav>
 
-      <!-- Head -->
-      <ellipse cx="160" cy="145" rx="90" ry="80" fill="url(#furDark)"/>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-number">VT</div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">// Est. 2023 — Monthly Drops Only</p>
+    <h1 class="hero-title">
+      VENTRICULAR<br><span class="red">TREVENA</span>
+    </h1>
+    <p class="hero-sub">
+      Each piece is made in strict limited quantities.<br>
+      Once it's gone — it's gone forever.<br>
+      No restocks. No reruns.
+    </p>
+    <div class="hero-cta">
+      <a href="#drop" class="btn-primary">View Next Drop</a>
+      <a href="#archive" class="btn-outline">Archive</a>
+    </div>
+  </div>
+</section>
 
-      <!-- Face mask -->
-      <ellipse cx="160" cy="165" rx="55" ry="45" fill="url(#furLight)"/>
+<!-- COUNTDOWN -->
+<section class="drop-section" id="drop">
+  <p class="drop-label">// Upcoming</p>
+  <h2 class="drop-name">DROP 009 — "PULSE"</h2>
+  <p class="drop-date">Dropping — Saturday, March 15, 2026 @ 12:00 PM EST</p>
 
-      <!-- Ears -->
-      <path d="M95 70 L60 20 L120 60 Z" fill="#6b7280"/>
-      <path d="M225 70 L260 20 L200 60 Z" fill="#6b7280"/>
+  <div class="countdown">
+    <div class="countdown-block">
+      <span class="countdown-num" id="days">00</span>
+      <span class="countdown-unit">Days</span>
+    </div>
+    <div class="countdown-block">
+      <span class="countdown-num" id="hours">00</span>
+      <span class="countdown-unit">Hours</span>
+    </div>
+    <div class="countdown-block">
+      <span class="countdown-num" id="mins">00</span>
+      <span class="countdown-unit">Minutes</span>
+    </div>
+    <div class="countdown-block">
+      <span class="countdown-num" id="secs">00</span>
+      <span class="countdown-unit">Seconds</span>
+    </div>
+  </div>
 
-      <!-- Inner ears -->
-      <path d="M95 70 L75 35 L110 60 Z" fill="#d1d5db"/>
-      <path d="M225 70 L245 35 L210 60 Z" fill="#d1d5db"/>
+  <div class="waitlist" id="waitlist">
+    <p>Get early access — join the waitlist</p>
+    <div class="waitlist-form">
+      <input type="email" id="email-input" placeholder="your@email.com" />
+      <button onclick="joinWaitlist()">Notify Me</button>
+    </div>
+    <p id="waitlist-success">✓ You're on the list. Stay tuned.</p>
+  </div>
+</section>
 
-      <!-- Eyes -->
-      <circle cx="135" cy="145" r="7"/>
-      <circle cx="185" cy="145" r="7"/>
+<!-- CURRENT DROP / SHOP -->
+<section class="items-section" id="current">
+  <div class="section-header">
+    <h2 class="section-title">Drop 008 — "STATIC"</h2>
+    <span class="section-meta">5 of 6 pieces sold out</span>
+  </div>
 
-      <!-- Nose -->
-      <path d="M160 158
-               C154 158 150 162 150 166
-               C150 172 160 176 160 176
-               C160 176 170 172 170 166
-               C170 162 166 158 160 158Z"
-            fill="#111827"/>
+  <div class="items-grid">
 
-      <!-- Smile -->
-      <path d="M160 176
-               C150 186 140 188 130 186"
-            stroke="#111827" stroke-width="3" fill="none"/>
-      <path d="M160 176
-               C170 186 180 188 190 186"
-            stroke="#111827" stroke-width="3" fill="none"/>
-    </svg>
-
-    <h1> Darshi will you be my valentine?</h1>
-
-    <section class="button-zone" id="zone">
-      <button id="yesBtn">Yes</button>
-      <button id="noBtn">No</button>
-    </section>
-
-    <!-- HINT -->
-    <div class="hint" id="hint">"No" seems to be shy like you. Now you can't even spam No the way you always do hehe. </div>
-
-    <section class="result" id="result">
-      <h2>YAYY I KNEW YOU'D SAY YES LESGOO!! 🎉</h2>
-      <img
-        class="fireworks"
-        src="https://64.media.tumblr.com/1eca1fb58948640e4e266702cfd76073/tumblr_n83mtmFfkn1qfm2n0o1_250.gifv"
-        alt="Meme"
-      />
-      <button id="giftBtn">I have a gift for you </button>
-    </section>
-  </main>
-
-  <!-- ENVELOPE PAGE -->
-  <div class="envelope-page" id="envelopePage">
-    <div class="container-envelope">
-      <div class="envelope-wrapper" id="envelopeWrapper">
-        <div class="envelope">
-          <div class="letter">
-            <div class="text">
-             13th of FEB IS OUR DAY OFFICIALLY!!!! Come on now, you really thought our first ever valentines would be lame and occupied by the family event? A small gesture for your first valentines with me. This is just the beginning 🫶
-            
-            </div>
-          </div>
+    <!-- Item 1 - Available -->
+    <div class="item-card">
+      <div class="item-placeholder">
+        <div class="item-placeholder-label">STATIC<br>COACH JACKET</div>
+      </div>
+      <div class="limited-badge">12 / 50 left</div>
+      <div class="item-info">
+        <div class="item-name">Static Coach Jacket</div>
+        <div class="item-details">
+          <span class="item-edition">Ed. of 50</span>
+          <span class="item-price">$285</span>
         </div>
-        <div class="heart" id="heart"></div>
       </div>
     </div>
-    <p class="envelope-instruction">Click the heart!</p>
-    <button id="surpriseBtn">Ok one last surprise </button>
+
+    <!-- Item 2 - Sold Out -->
+    <div class="item-card sold-out">
+      <div class="item-placeholder">
+        <div class="item-placeholder-label">NOISE<br>HEAVYWEIGHT TEE</div>
+      </div>
+      <div class="sold-out-badge">Sold Out</div>
+      <div class="item-info">
+        <div class="item-name">Noise Heavyweight Tee</div>
+        <div class="item-details">
+          <span class="item-edition">Ed. of 100</span>
+          <span class="item-price">$95</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 3 - Sold Out -->
+    <div class="item-card sold-out">
+      <div class="item-placeholder">
+        <div class="item-placeholder-label">FREQUENCY<br>CARGO PANTS</div>
+      </div>
+      <div class="sold-out-badge">Sold Out</div>
+      <div class="item-info">
+        <div class="item-name">Frequency Cargo Pants</div>
+        <div class="item-details">
+          <span class="item-edition">Ed. of 75</span>
+          <span class="item-price">$195</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 4 - Sold Out -->
+    <div class="item-card sold-out">
+      <div class="item-placeholder">
+        <div class="item-placeholder-label">CHANNEL<br>HOODIE</div>
+      </div>
+      <div class="sold-out-badge">Sold Out</div>
+      <div class="item-info">
+        <div class="item-name">Channel Hoodie</div>
+        <div class="item-details">
+          <span class="item-edition">Ed. of 60</span>
+          <span class="item-price">$155</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 5 - Sold Out -->
+    <div class="item-card sold-out">
+      <div class="item-placeholder">
+        <div class="item-placeholder-label">DEAD AIR<br>6-PANEL CAP</div>
+      </div>
+      <div class="sold-out-badge">Sold Out</div>
+      <div class="item-info">
+        <div class="item-name">Dead Air 6-Panel Cap</div>
+        <div class="item-details">
+          <span class="item-edition">Ed. of 150</span>
+          <span class="item-price">$65</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 6 - Sold Out -->
+    <div class="item-card sold-out">
+      <div class="item-placeholder">
+        <div class="item-placeholder-label">STATIC<br>LONGSLEEVE</div>
+      </div>
+      <div class="sold-out-badge">Sold Out</div>
+      <div class="item-info">
+        <div class="item-name">Static Longsleeve</div>
+        <div class="item-details">
+          <span class="item-edition">Ed. of 80</span>
+          <span class="item-price">$115</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ARCHIVE -->
+<section class="archive-section" id="archive">
+  <div class="section-header">
+    <h2 class="section-title">Archive</h2>
+    <span class="section-meta">Drops 001–007 — All Sold Out</span>
   </div>
 
-  <!-- LANTERNS PAGE -->
-  <div class="lanterns-page" id="lanternsPage">
-    <div class="stars" id="stars"></div>
-    <div class="lantern-container" id="lanternContainer"></div>
-    <div class="lanterns-message">Look outside your room window </div>
+  <div class="archive-grid">
+    <div class="archive-card">
+      <div class="archive-drop-num">007</div>
+      <div class="archive-drop-name">"FRACTURE"</div>
+      <div class="archive-drop-date">Feb 2026</div>
+      <div class="archive-sold">● Sold Out in 4 min</div>
+    </div>
+    <div class="archive-card">
+      <div class="archive-drop-num">006</div>
+      <div class="archive-drop-name">"HOLLOW"</div>
+      <div class="archive-drop-date">Jan 2026</div>
+      <div class="archive-sold">● Sold Out in 9 min</div>
+    </div>
+    <div class="archive-card">
+      <div class="archive-drop-num">005</div>
+      <div class="archive-drop-name">"BREACH"</div>
+      <div class="archive-drop-date">Dec 2025</div>
+      <div class="archive-sold">● Sold Out in 2 min</div>
+    </div>
+    <div class="archive-card">
+      <div class="archive-drop-num">004</div>
+      <div class="archive-drop-name">"RELIC"</div>
+      <div class="archive-drop-date">Nov 2025</div>
+      <div class="archive-sold">● Sold Out in 11 min</div>
+    </div>
+    <div class="archive-card">
+      <div class="archive-drop-num">003</div>
+      <div class="archive-drop-name">"VESSEL"</div>
+      <div class="archive-drop-date">Oct 2025</div>
+      <div class="archive-sold">● Sold Out in 6 min</div>
+    </div>
+    <div class="archive-card">
+      <div class="archive-drop-num">002</div>
+      <div class="archive-drop-name">"VOID"</div>
+      <div class="archive-drop-date">Sep 2025</div>
+      <div class="archive-sold">● Sold Out in 3 min</div>
+    </div>
+    <div class="archive-card">
+      <div class="archive-drop-num">001</div>
+      <div class="archive-drop-name">"ORIGIN"</div>
+      <div class="archive-drop-date">Aug 2025</div>
+      <div class="archive-sold">● Sold Out in 18 min</div>
+    </div>
   </div>
+</section>
 
-  <script>
-    const zone = document.getElementById("zone");
-    const yesBtn = document.getElementById("yesBtn");
-    const noBtn = document.getElementById("noBtn");
-    const result = document.getElementById("result");
-    const hint = document.getElementById("hint");
-    const giftBtn = document.getElementById("giftBtn");
-    const mainPage = document.getElementById("mainPage");
-    const envelopePage = document.getElementById("envelopePage");
-    const envelopeWrapper = document.getElementById("envelopeWrapper");
-    const heart = document.getElementById("heart");
-    const surpriseBtn = document.getElementById("surpriseBtn");
-    const lanternsPage = document.getElementById("lanternsPage");
-    const lanternContainer = document.getElementById("lanternContainer");
-    const starsContainer = document.getElementById("stars");
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">VENTRICULAR<br><span>TREVENA</span></div>
+    <p class="footer-tagline">Limited. Always.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Navigation</h4>
+    <ul>
+      <li><a href="#drop">Next Drop</a></li>
+      <li><a href="#current">Current Drop</a></li>
+      <li><a href="#archive">Archive</a></li>
+      <li><a href="#waitlist">Waitlist</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Info</h4>
+    <ul>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Sizing Guide</a></li>
+      <li><a href="#">Shipping Policy</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <p>© 2026 Ventricular Trevena. All rights reserved.</p>
+  <p>Monthly drops. No restocks.</p>
+</div>
 
-    // Debug logging
-    console.log("Heart element:", heart);
-    console.log("Envelope wrapper:", envelopeWrapper);
+<script>
+  // Countdown Timer
+  function updateCountdown() {
+    const dropDate = new Date('March 15, 2026 12:00:00 EST');
+    const now = new Date();
+    const diff = dropDate - now;
 
-    /* ---------- CONFETTI ---------- */
-    const confettiCanvas = document.getElementById("confettiCanvas");
-
-    function resizeConfettiCanvas() {
-      const dpr = Math.max(1, window.devicePixelRatio || 1);
-      confettiCanvas.width = Math.floor(window.innerWidth * dpr);
-      confettiCanvas.height = Math.floor(window.innerHeight * dpr);
-      confettiCanvas.style.width = "100vw";
-      confettiCanvas.style.height = "100vh";
+    if (diff <= 0) {
+      document.getElementById('days').textContent = '00';
+      document.getElementById('hours').textContent = '00';
+      document.getElementById('mins').textContent = '00';
+      document.getElementById('secs').textContent = '00';
+      return;
     }
 
-    resizeConfettiCanvas();
-    window.addEventListener("resize", resizeConfettiCanvas);
-    window.addEventListener("orientationchange", () => setTimeout(resizeConfettiCanvas, 150));
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const secs = Math.floor((diff % (1000 * 60)) / 1000);
 
-    const confettiInstance = confetti.create(confettiCanvas, {
-      resize: false,
-      useWorker: true
-    });
+    document.getElementById('days').textContent = String(days).padStart(2, '0');
+    document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+    document.getElementById('mins').textContent = String(mins).padStart(2, '0');
+    document.getElementById('secs').textContent = String(secs).padStart(2, '0');
+  }
 
-    function fullScreenConfetti() {
-      const end = Date.now() + 1600;
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
 
-      (function frame() {
-        confettiInstance({
-          particleCount: 12,
-          spread: 90,
-          startVelocity: 45,
-          ticks: 180,
-          origin: { x: Math.random(), y: Math.random() * 0.3 }
-        });
-        if (Date.now() < end) requestAnimationFrame(frame);
-      })();
-
-      setTimeout(() => {
-        confettiInstance({
-          particleCount: 300,
-          spread: 140,
-          startVelocity: 60,
-          ticks: 220,
-          origin: { x: 0.5, y: 0.55 }
-        });
-      }, 300);
+  // Waitlist
+  function joinWaitlist() {
+    const email = document.getElementById('email-input').value;
+    if (!email || !email.includes('@')) {
+      document.getElementById('email-input').style.borderColor = '#ff1f1f';
+      return;
     }
+    document.querySelector('.waitlist-form').style.display = 'none';
+    document.getElementById('waitlist-success').style.display = 'block';
+  }
 
-    /* ---------- YES BUTTON GROWS ---------- */
-    let yesScale = 1;
-    function growYes() {
-      yesScale = Math.min(3, yesScale + 0.1);
-      yesBtn.style.transform = `translateY(-50%) scale(${yesScale})`;
-    }
-
-    /* ---------- NO BUTTON RUNS AWAY ---------- */
-    function clamp(n, min, max) {
-      return Math.max(min, Math.min(max, n));
-    }
-
-    function moveNo(px, py) {
-      const z = zone.getBoundingClientRect();
-      const b = noBtn.getBoundingClientRect();
-
-      let dx = (b.left + b.width / 2) - px;
-      let dy = (b.top + b.height / 2) - py;
-      let mag = Math.hypot(dx, dy) || 1;
-      dx /= mag;
-      dy /= mag;
-
-      let newLeft = (b.left - z.left) + dx * 150;
-      let newTop  = (b.top - z.top) + dy * 150;
-
-      newLeft = clamp(newLeft, 0, z.width - b.width);
-      newTop  = clamp(newTop, 0, z.height - b.height);
-
-      noBtn.style.left = newLeft + "px";
-      noBtn.style.top = newTop + "px";
-      noBtn.style.transform = "none";
-
-      growYes();
-    }
-
-    zone.addEventListener("pointermove", e => {
-      const b = noBtn.getBoundingClientRect();
-      const d = Math.hypot(
-        (b.left + b.width / 2) - e.clientX,
-        (b.top + b.height / 2) - e.clientY
-      );
-      if (d < 140) moveNo(e.clientX, e.clientY);
-    });
-
-    noBtn.addEventListener("click", e => e.preventDefault());
-
-    /* ---------- YES CLICK ---------- */
-    yesBtn.addEventListener("click", () => {
-      zone.style.display = "none";
-      hint.style.display = "none";
-      result.style.display = "block";
-      resizeConfettiCanvas();
-      fullScreenConfetti();
-    });
-
-    /* ---------- GIFT BUTTON ---------- */
-    giftBtn.addEventListener("click", () => {
-      mainPage.style.display = "none";
-      envelopePage.style.display = "block";
-    });
-
-    /* ---------- ENVELOPE CLICK ---------- */
-    if (heart) {
-      heart.addEventListener("click", (e) => {
-        e.stopPropagation();
-        console.log("Heart clicked!");
-        envelopeWrapper.classList.toggle("flap");
-        console.log("Flap class:", envelopeWrapper.classList.contains("flap"));
-        // Show surprise button after letter appears
-        if (envelopeWrapper.classList.contains("flap")) {
-          setTimeout(() => {
-            surpriseBtn.style.display = "block";
-          }, 2000);
-        }
-      });
-    } else {
-      console.error("Heart element not found!");
-    }
-
-    // Backup: click anywhere on envelope wrapper
-    envelopeWrapper.addEventListener("click", () => {
-      console.log("Envelope wrapper clicked!");
-      envelopeWrapper.classList.toggle("flap");
-      if (envelopeWrapper.classList.contains("flap")) {
-        setTimeout(() => {
-          surpriseBtn.style.display = "block";
-        }, 2000);
-      }
-    });
-
-    /* ---------- SURPRISE BUTTON ---------- */
-    surpriseBtn.addEventListener("click", () => {
-      envelopePage.style.display = "none";
-      lanternsPage.style.display = "block";
-      createStars();
-      createLanterns();
-    });
-
-    /* ---------- CREATE STARS ---------- */
-    function createStars() {
-      for (let i = 0; i < 150; i++) {
-        const star = document.createElement("div");
-        star.className = "star";
-        const size = Math.random() * 3 + 1;
-        star.style.width = size + "px";
-        star.style.height = size + "px";
-        star.style.left = Math.random() * 100 + "%";
-        star.style.top = Math.random() * 100 + "%";
-        star.style.animationDelay = Math.random() * 3 + "s";
-        starsContainer.appendChild(star);
-      }
-    }
-
-    /* ---------- CREATE LANTERNS ---------- */
-    function createLanterns() {
-      const numLanterns = 30;
-      
-      for (let i = 0; i < numLanterns; i++) {
-        setTimeout(() => {
-          const lantern = document.createElement("div");
-          lantern.className = "lantern";
-          
-          // Random horizontal position
-          lantern.style.left = Math.random() * 100 + "%";
-          
-          // Random delay
-          lantern.style.animationDelay = Math.random() * 5 + "s";
-          
-          // Random drift
-          const drift = (Math.random() - 0.5) * 200;
-          lantern.style.setProperty("--drift", drift + "px");
-          
-          // Random size variation
-          const scale = 0.7 + Math.random() * 0.6;
-          lantern.style.transform = `scale(${scale})`;
-          
-          lantern.innerHTML = `
-            <div class="lantern-wire"></div>
-            <div class="lantern-top"></div>
-            <div class="lantern-body"></div>
-            <div class="lantern-bottom"></div>
-          `;
-          
-          lanternContainer.appendChild(lantern);
-        }, i * 300);
-      }
-    }
-  </script>
+  document.getElementById('email-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') joinWaitlist();
+    this.style.borderColor = '#444';
+  });
+</script>
 </body>
 </html>
